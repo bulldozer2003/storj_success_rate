@@ -22,6 +22,11 @@ else
 	then
 		LOG="docker logs $DOCKER_NODE_NAME --since ${LOG_SINCE}"
 	fi
+	# Cache log
+	LOG_CACHE=$(mktemp -p /dev/shm/)
+	$LOG > $LOG_CACHE 2>&1
+	ls -sh $LOG_CACHE
+	LOG="cat $LOG_CACHE"
 fi
 
 #Node Success Rates
@@ -234,3 +239,8 @@ echo -e "\e[33mFailed:                $delete_failed \e[0m"
 echo -e "Fail Rate:             $delete_failratio"
 echo -e "\e[92mSuccessful:            $delete_success \e[0m"
 echo -e "Success Rate:          $delete_ratio"
+
+if [ -n $LOG_CACHE ]
+then
+	rm $LOG_CACHE
+fi
